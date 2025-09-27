@@ -1,6 +1,6 @@
 class Utils {
     static getDate() {
-        return new Date().toString();  // Server time
+        return new Date().toString();  
     }
 }
 
