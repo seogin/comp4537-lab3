@@ -4,16 +4,16 @@ const fs = require('fs');
 const path = require('path');
 const Utils = require('./modules/utils');
 
-// load greeting string
+// load greeting string (relative to THIS file)
 const strings = JSON.parse(
   fs.readFileSync(path.join(__dirname, 'lang', 'messages', 'en', 'en.json'), 'utf8')
 );
 
-// accepted endpoints
+// accept these paths (case-sensitive); we’ll also accept "/" for convenience
 const ENDPOINTS = new Set([
-  '/',                                  // root
-  '/COMP4537/labs/3/getDate/',          // exact lab path
-  '/COMP4537/labs/3/getDate'            // no trailing slash
+  '/',
+  '/COMP4537/labs/3/getDate/',
+  '/COMP4537/labs/3/getDate'
 ]);
 
 class Server {
@@ -25,10 +25,11 @@ class Server {
   }
 
   handle(req, res) {
-    const u = new URL(req.url, 'http://x'); // base dummy
-    const pathname = u.pathname;
+    const u = new URL(req.url, 'http://x'); // dummy base
+    console.log('REQ', req.method, u.pathname, u.search); // <-- shows in Render logs
 
-    if (!ENDPOINTS.has(pathname)) {
+    // allow both "/" and the lab endpoint
+    if (!ENDPOINTS.has(u.pathname)) {
       res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
       return res.end('Not Found');
     }
@@ -41,5 +42,5 @@ class Server {
   }
 }
 
-const PORT = process.env.PORT || 3000;  // important for Render
+const PORT = process.env.PORT || 3000;   // IMPORTANT for Render
 new Server(PORT).start();
